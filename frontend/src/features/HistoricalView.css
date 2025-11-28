@@ -1,0 +1,117 @@
+.historical-view {
+  max-width: 1200px;
+}
+
+.view-header {
+  margin-bottom: 2rem;
+}
+
+.view-header h1 {
+  margin: 0 0 0.5rem 0;
+  color: #333;
+}
+
+.view-header h2 {
+  margin: 0;
+  color: #667eea;
+  font-size: 1.3rem;
+}
+
+.controls {
+  background: white;
+  border-radius: 12px;
+  padding: 2rem;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+  margin-bottom: 2rem;
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
+}
+
+.control-group {
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+}
+
+.control-group label {
+  font-weight: 600;
+  color: #333;
+  font-size: 0.95rem;
+}
+
+.button-group {
+  display: flex;
+  gap: 0.5rem;
+  flex-wrap: wrap;
+}
+
+.button-group button {
+  padding: 0.75rem 1.5rem;
+  border: 2px solid #e5e7eb;
+  background: white;
+  border-radius: 6px;
+  cursor: pointer;
+  font-weight: 600;
+  transition: all 0.2s;
+  color: #374151;
+}
+
+.button-group button:hover {
+  border-color: #667eea;
+  background: #f3f4f6;
+}
+
+.button-group button.active {
+  background: #667eea;
+  border-color: #667eea;
+  color: white;
+}
+
+.control-group select {
+  padding: 0.75rem 1rem;
+  border: 2px solid #e5e7eb;
+  border-radius: 6px;
+  font-size: 1rem;
+  cursor: pointer;
+  background: white;
+  color: #374151;
+}
+
+.control-group select:focus {
+  outline: none;
+  border-color: #667eea;
+}
+
+.chart-container {
+  background: white;
+  border-radius: 12px;
+  padding: 2rem;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+}
+
+.chart-container h3 {
+  margin: 0 0 1.5rem 0;
+  color: #333;
+}
+
+.no-data {
+  background: white;
+  border-radius: 12px;
+  padding: 3rem;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+  text-align: center;
+}
+
+.no-data p {
+  color: #666;
+  margin-bottom: 1rem;
+}
+
+.no-data .hint {
+  color: #999;
+  font-size: 0.9rem;
+  font-style: italic;
+  max-width: 600px;
+  margin: 0 auto;
+}

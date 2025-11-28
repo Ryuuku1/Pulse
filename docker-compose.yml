@@ -1,0 +1,50 @@
+version: '3.8'
+
+services:
+  backend:
+    build:
+      context: ./backend
+      dockerfile: src/SolarMonitor.Api/Dockerfile
+    container_name: solarmonitor-backend
+    ports:
+      - "5000:8080"
+    environment:
+      - ASPNETCORE_ENVIRONMENT=Production
+      - Huawei__BaseUrl=${HUAWEI_BASE_URL}
+      - Huawei__Username=${HUAWEI_USERNAME}
+      - Huawei__Password=${HUAWEI_PASSWORD}
+      - Huawei__StationCode=${HUAWEI_STATION_CODE}
+      - Huawei__PollingIntervalSeconds=${HUAWEI_POLLING_INTERVAL:-30}
+      - Huawei__RequestTimeoutSeconds=${HUAWEI_REQUEST_TIMEOUT:-30}
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8080/health"]
+      interval: 30s
+      timeout: 3s
+      retries: 3
+      start_period: 10s
+    restart: unless-stopped
+    networks:
+      - solarmonitor
+
+  frontend:
+    build:
+      context: ./frontend
+      dockerfile: Dockerfile
+    container_name: solarmonitor-frontend
+    ports:
+      - "8080:80"
+    depends_on:
+      - backend
+    healthcheck:
+      test: ["CMD", "wget", "--quiet", "--tries=1", "--spider", "http://localhost/health.html"]
+      interval: 30s
+      timeout: 3s
+      retries: 3
+      start_period: 5s
+    restart: unless-stopped
+    networks:
+      - solarmonitor
+
+networks:
+  solarmonitor:
+    driver: bridge
