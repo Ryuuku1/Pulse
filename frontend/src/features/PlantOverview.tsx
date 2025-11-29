@@ -5,6 +5,20 @@ import { LoadingSpinner } from '../components/LoadingSpinner';
 import { PlantStatus } from '../types/api';
 import './PlantOverview.css';
 
+function statusTone(status: PlantStatus) {
+  switch (status) {
+    case PlantStatus.Connected:
+      return { label: 'Online', color: '#4ade80' };
+    case PlantStatus.Disconnected:
+    case PlantStatus.Offline:
+      return { label: 'Offline', color: '#f87171' };
+    case PlantStatus.Fault:
+      return { label: 'Attention', color: '#fbbf24' };
+    default:
+      return { label: 'Unknown', color: '#cbd5e1' };
+  }
+}
+
 function PlantCard({ plantId }: { plantId: string }) {
   const { data: summary, isLoading, error } = usePlantSummary(plantId);
 
@@ -13,61 +27,66 @@ function PlantCard({ plantId }: { plantId: string }) {
   if (!summary) return null;
 
   const { plant, currentMetrics, energySummary, totalDevices, activeDevices } = summary;
-
-  const getStatusColor = (status: PlantStatus) => {
-    switch (status) {
-      case PlantStatus.Connected:
-        return '#10b981';
-      case PlantStatus.Disconnected:
-      case PlantStatus.Offline:
-        return '#ef4444';
-      case PlantStatus.Fault:
-        return '#f59e0b';
-      default:
-        return '#6b7280';
-    }
-  };
-
-  const getStatusLabel = (status: PlantStatus) => {
-    switch (status) {
-      case PlantStatus.Connected:
-        return 'Connected';
-      case PlantStatus.Disconnected:
-        return 'Disconnected';
-      case PlantStatus.Offline:
-        return 'Offline';
-      case PlantStatus.Fault:
-        return 'Fault';
-      default:
-        return 'Unknown';
-    }
-  };
+  const status = statusTone(plant.status);
+  const utilization =
+    plant.installedCapacityKw && currentMetrics?.pvPowerKw
+      ? Math.min((currentMetrics.pvPowerKw / plant.installedCapacityKw) * 100, 160)
+      : null;
 
   return (
     <div className="plant-card">
-      <div className="plant-header">
-        <h2>{plant.name}</h2>
-        <span className="plant-status" style={{ background: getStatusColor(plant.status) }}>
-          {getStatusLabel(plant.status)}
-        </span>
-      </div>
-
-      {plant.address && <p className="plant-address">📍 {plant.address}</p>}
-
-      <div className="plant-info">
-        {plant.installedCapacityKw && (
-          <div className="info-item">
-            <span className="label">Installed Capacity:</span>
-            <span className="value">{plant.installedCapacityKw.toFixed(2)} kW</span>
+      <div className="plant-card-top">
+        <div>
+          <div className="plant-title-row">
+            <h2>{plant.name}</h2>
+            <span className="plant-status" style={{ borderColor: status.color, color: status.color }}>
+              {status.label}
+            </span>
           </div>
-        )}
-        <div className="info-item">
-          <span className="label">Devices:</span>
-          <span className="value">
-            {activeDevices} / {totalDevices} active
-          </span>
+          <p className="plant-location">{plant.address || 'Local network'}</p>
+        </div>
+        <div className="action-buttons">
+          <Link to={`/realtime/${plantId}`} className="btn btn-primary">
+            Real-time
+          </Link>
+          <Link to={`/historical/${plantId}`} className="btn btn-secondary">
+            History
+          </Link>
         </div>
       </div>
+
+      <div className="plant-meta">
+        {plant.installedCapacityKw && (
+          <div className="meta-chip">
+            <span>Capacity</span>
+            <strong>{plant.installedCapacityKw.toFixed(1)} kW</strong>
+          </div>
+        )}
+        <div className="meta-chip">
+          <span>Devices</span>
+          <strong>
+            {activeDevices} / {totalDevices} active
+          </strong>
+        </div>
+        {currentMetrics?.timestampUtc && (
+          <div className="meta-chip soft">
+            <span>Updated</span>
+            <strong>{new Date(currentMetrics.timestampUtc).toLocaleTimeString()}</strong>
+          </div>
+        )}
+      </div>
+
+      {utilization !== null && (
+        <div className="utilization">
+          <div className="util-header">
+            <span>Capacity use</span>
+            <span>{utilization.toFixed(0)}%</span>
+          </div>
+          <div className="util-bar">
+            <div className="util-fill" style={{ width: `${utilization}%` }} />
+          </div>
+        </div>
+      )}
 
       <div className="metrics-grid">
         {currentMetrics?.pvPowerKw !== undefined && (
@@ -75,47 +94,72 @@ function PlantCard({ plantId }: { plantId: string }) {
             title="Current Power"
             value={currentMetrics.pvPowerKw.toFixed(2)}
             unit="kW"
-            icon="⚡"
+            subtitle="PV output now"
+            highlight
           />
         )}
-
-        {energySummary && (
-          <>
-            <MetricCard
-              title="Today"
-              value={energySummary.energyTodayKwh.toFixed(1)}
-              unit="kWh"
-              icon="📅"
-            />
-            <MetricCard
-              title="This Month"
-              value={energySummary.energyMonthKwh.toFixed(0)}
-              unit="kWh"
-              icon="📊"
-            />
-            <MetricCard
-              title="Lifetime"
-              value={energySummary.energyTotalKwh.toFixed(0)}
-              unit="kWh"
-              icon="🏆"
-            />
-          </>
+        {currentMetrics?.gridPowerKw !== undefined && (
+          <MetricCard
+            title={currentMetrics.gridPowerKw >= 0 ? 'Grid Export' : 'Grid Import'}
+            value={Math.abs(currentMetrics.gridPowerKw).toFixed(2)}
+            unit="kW"
+            subtitle="Net grid flow"
+            trend={currentMetrics.gridPowerKw >= 0 ? 'up' : 'down'}
+          />
+        )}
+        {currentMetrics?.batteryPowerKw !== undefined && (
+          <MetricCard
+            title={currentMetrics.batteryPowerKw >= 0 ? 'Battery Charge' : 'Battery Discharge'}
+            value={Math.abs(currentMetrics.batteryPowerKw).toFixed(2)}
+            unit="kW"
+            subtitle="Storage flow"
+          />
+        )}
+        {currentMetrics?.stateOfChargePercent !== undefined && (
+          <MetricCard
+            title="Battery SoC"
+            value={currentMetrics.stateOfChargePercent.toFixed(0)}
+            unit="%"
+            subtitle="State of charge"
+          />
+        )}
+        {currentMetrics?.gridVoltageV !== undefined && (
+          <MetricCard
+            title="Grid Voltage"
+            value={currentMetrics.gridVoltageV.toFixed(1)}
+            unit="V"
+            subtitle="At point of common coupling"
+          />
+        )}
+        {currentMetrics?.temperatureC !== undefined && (
+          <MetricCard
+            title="Inverter Temp"
+            value={currentMetrics.temperatureC.toFixed(1)}
+            unit="C"
+            subtitle="Heatsink/internal sensor"
+          />
         )}
       </div>
 
-      <div className="plant-actions">
-        <Link to={`/realtime/${plantId}`} className="btn btn-primary">
-          View Real-time
-        </Link>
-        <Link to={`/historical/${plantId}`} className="btn btn-secondary">
-          View Historical
-        </Link>
-      </div>
-
-      {plant.lastUpdateTime && (
-        <p className="last-update">
-          Last update: {new Date(plant.lastUpdateTime).toLocaleString()}
-        </p>
+      {energySummary && (
+        <div className="energy-band">
+          <div>
+            <span>Today</span>
+            <strong>{energySummary.energyTodayKwh.toFixed(1)} kWh</strong>
+          </div>
+          <div>
+            <span>Month</span>
+            <strong>{energySummary.energyMonthKwh.toFixed(0)} kWh</strong>
+          </div>
+          <div>
+            <span>Year</span>
+            <strong>{energySummary.energyYearKwh.toFixed(0)} kWh</strong>
+          </div>
+          <div>
+            <span>Lifetime</span>
+            <strong>{energySummary.energyTotalKwh.toFixed(0)} kWh</strong>
+          </div>
+        </div>
       )}
     </div>
   );
@@ -131,17 +175,42 @@ export function PlantOverview() {
       <div className="no-plants">
         <h2>No Plants Found</h2>
         <p>
-          No solar plants are available. Please check your Huawei API configuration and ensure the
-          background polling service has synced data.
+          No solar plants are available. Check your Modbus/Huawei configuration and ensure polling
+          has synced data.
         </p>
       </div>
     );
   }
 
+  const totalCapacity = plants.reduce(
+    (acc, plant) => acc + (plant.installedCapacityKw ?? 0),
+    0
+  );
+  const onlineCount = plants.filter((p) => p.status === PlantStatus.Connected).length;
+
   return (
     <div className="plant-overview">
-      <h1>Solar Plants Overview</h1>
-      <p className="subtitle">Monitoring {plants.length} solar plant(s)</p>
+      <div className="overview-hero">
+        <div>
+          <p className="eyebrow">Portfolio</p>
+          <h1>All Plants</h1>
+          <p className="subtitle">
+            Live system health, current output, and energy performance across your fleet.
+          </p>
+        </div>
+        <div className="hero-stats">
+          <div className="hero-stat">
+            <span>Plants Online</span>
+            <strong>
+              {onlineCount} / {plants.length}
+            </strong>
+          </div>
+          <div className="hero-stat">
+            <span>Installed Capacity</span>
+            <strong>{totalCapacity.toFixed(1)} kW</strong>
+          </div>
+        </div>
+      </div>
 
       <div className="plants-container">
         {plants.map((plant) => (

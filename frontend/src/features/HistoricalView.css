@@ -1,31 +1,49 @@
 .historical-view {
-  max-width: 1200px;
+  color: #e8edf7;
 }
 
 .view-header {
-  margin-bottom: 2rem;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 1rem;
+  margin-bottom: 1.5rem;
 }
 
-.view-header h1 {
-  margin: 0 0 0.5rem 0;
-  color: #333;
+.plant-name {
+  margin: 0.35rem 0 0;
+  color: rgba(232, 237, 247, 0.75);
 }
 
-.view-header h2 {
-  margin: 0;
-  color: #667eea;
-  font-size: 1.3rem;
+.range-chip {
+  padding: 0.75rem 1rem;
+  background: rgba(255, 255, 255, 0.06);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  border-radius: 12px;
+  min-width: 180px;
+}
+
+.range-chip span {
+  display: block;
+  color: rgba(232, 237, 247, 0.7);
+  font-size: 0.9rem;
+}
+
+.range-chip strong {
+  display: block;
+  margin-top: 0.25rem;
 }
 
 .controls {
-  background: white;
-  border-radius: 12px;
-  padding: 2rem;
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
-  margin-bottom: 2rem;
+  background: rgba(255, 255, 255, 0.05);
+  border-radius: 14px;
+  padding: 1.5rem;
+  box-shadow: 0 12px 30px rgba(0, 0, 0, 0.25);
+  margin-bottom: 1.5rem;
   display: flex;
   flex-direction: column;
-  gap: 1.5rem;
+  gap: 1.25rem;
+  border: 1px solid rgba(255, 255, 255, 0.08);
 }
 
 .control-group {
@@ -35,9 +53,7 @@
 }
 
 .control-group label {
-  font-weight: 600;
-  color: #333;
-  font-size: 0.95rem;
+  font-weight: 700;
 }
 
 .button-group {
@@ -47,71 +63,96 @@
 }
 
 .button-group button {
-  padding: 0.75rem 1.5rem;
-  border: 2px solid #e5e7eb;
-  background: white;
-  border-radius: 6px;
+  padding: 0.65rem 1.2rem;
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  background: rgba(255, 255, 255, 0.05);
+  border-radius: 10px;
   cursor: pointer;
-  font-weight: 600;
-  transition: all 0.2s;
-  color: #374151;
+  font-weight: 700;
+  color: #e8edf7;
+  transition: all 0.2s ease;
 }
 
 .button-group button:hover {
-  border-color: #667eea;
-  background: #f3f4f6;
+  border-color: rgba(77, 180, 255, 0.5);
 }
 
 .button-group button.active {
-  background: #667eea;
-  border-color: #667eea;
-  color: white;
+  background: linear-gradient(135deg, #1ad1a5, #4db4ff);
+  border-color: transparent;
+  color: #0b1021;
 }
 
 .control-group select {
   padding: 0.75rem 1rem;
-  border: 2px solid #e5e7eb;
-  border-radius: 6px;
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: 10px;
+  background: rgba(255, 255, 255, 0.05);
+  color: #e8edf7;
   font-size: 1rem;
-  cursor: pointer;
-  background: white;
-  color: #374151;
 }
 
 .control-group select:focus {
   outline: none;
-  border-color: #667eea;
+  border-color: rgba(77, 180, 255, 0.5);
+}
+
+.kpi-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
+  gap: 0.85rem;
+  margin-bottom: 1.25rem;
+}
+
+.kpi-card {
+  background: rgba(255, 255, 255, 0.06);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  border-radius: 12px;
+  padding: 0.95rem;
+}
+
+.kpi-card span {
+  display: block;
+  color: rgba(232, 237, 247, 0.7);
+  font-size: 0.9rem;
+}
+
+.kpi-card strong {
+  display: block;
+  margin-top: 0.3rem;
+  font-size: 1.4rem;
+}
+
+.kpi-card small {
+  color: rgba(232, 237, 247, 0.7);
 }
 
 .chart-container {
-  background: white;
-  border-radius: 12px;
-  padding: 2rem;
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+  background: rgba(255, 255, 255, 0.05);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  border-radius: 14px;
+  padding: 1.5rem;
+  box-shadow: 0 12px 30px rgba(0, 0, 0, 0.25);
 }
 
 .chart-container h3 {
-  margin: 0 0 1.5rem 0;
-  color: #333;
+  margin: 0 0 1rem 0;
 }
 
 .no-data {
-  background: white;
-  border-radius: 12px;
-  padding: 3rem;
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+  background: rgba(255, 255, 255, 0.04);
+  border: 1px solid rgba(255, 255, 255, 0.06);
+  border-radius: 14px;
+  padding: 2rem;
   text-align: center;
+  margin-top: 1rem;
 }
 
 .no-data p {
-  color: #666;
-  margin-bottom: 1rem;
+  color: rgba(232, 237, 247, 0.85);
 }
 
 .no-data .hint {
-  color: #999;
-  font-size: 0.9rem;
-  font-style: italic;
-  max-width: 600px;
-  margin: 0 auto;
+  color: rgba(232, 237, 247, 0.7);
+  font-size: 0.95rem;
 }

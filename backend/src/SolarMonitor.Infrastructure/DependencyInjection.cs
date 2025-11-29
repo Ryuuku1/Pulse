@@ -5,6 +5,7 @@ using SolarMonitor.Infrastructure.BackgroundServices;
 using SolarMonitor.Infrastructure.Caching;
 using SolarMonitor.Infrastructure.Configuration;
 using SolarMonitor.Infrastructure.Huawei;
+using SolarMonitor.Infrastructure.Modbus;
 
 namespace SolarMonitor.Infrastructure;
 
@@ -20,15 +21,22 @@ public static class DependencyInjection
         // Configuration
         services.Configure<HuaweiApiOptions>(
             configuration.GetSection(HuaweiApiOptions.SectionName));
+        services.Configure<ModbusOptions>(
+            configuration.GetSection(ModbusOptions.SectionName));
+        services.Configure<DataAcquisitionOptions>(
+            configuration.GetSection(DataAcquisitionOptions.SectionName));
 
         // Huawei API Client
         services.AddHttpClient<IHuaweiClient, HuaweiClient>();
+
+        // Modbus Client
+        services.AddSingleton<IModbusClient, ModbusTcpClient>();
 
         // Caching
         services.AddSingleton<IMetricsCache, InMemoryMetricsCache>();
 
         // Background Services
-        services.AddHostedService<HuaweiDataPollingService>();
+        services.AddHostedService<PlantDataPollingService>();
 
         return services;
     }

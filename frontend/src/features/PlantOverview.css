@@ -1,149 +1,243 @@
-.plant-overview h1 {
-  margin: 0 0 0.5rem 0;
-  color: #333;
+.plant-overview {
+  color: #e8edf7;
+}
+
+.overview-hero {
+  background: linear-gradient(135deg, rgba(77, 180, 255, 0.14), rgba(26, 209, 165, 0.1));
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  border-radius: 16px;
+  padding: 1.75rem 1.5rem;
+  display: flex;
+  justify-content: space-between;
+  gap: 1.5rem;
+  box-shadow: 0 10px 35px rgba(0, 0, 0, 0.25);
+  backdrop-filter: blur(8px);
+  margin-bottom: 1.75rem;
+}
+
+.eyebrow {
+  margin: 0;
+  letter-spacing: 0.1em;
+  font-size: 0.8rem;
+  text-transform: uppercase;
+  color: rgba(232, 237, 247, 0.7);
+}
+
+.overview-hero h1 {
+  margin: 0.15rem 0 0.35rem 0;
 }
 
 .subtitle {
-  color: #666;
-  margin-bottom: 2rem;
+  margin: 0;
+  color: rgba(232, 237, 247, 0.7);
+}
+
+.hero-stats {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
+  gap: 0.75rem;
+  align-items: center;
+}
+
+.hero-stat {
+  background: rgba(255, 255, 255, 0.06);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  border-radius: 12px;
+  padding: 0.85rem 1rem;
+}
+
+.hero-stat span {
+  display: block;
+  color: rgba(232, 237, 247, 0.7);
+  font-size: 0.9rem;
+}
+
+.hero-stat strong {
+  display: block;
+  font-size: 1.25rem;
+  margin-top: 0.35rem;
 }
 
 .plants-container {
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(600px, 1fr));
-  gap: 2rem;
+  grid-template-columns: repeat(auto-fit, minmax(480px, 1fr));
+  gap: 1.5rem;
 }
 
 .plant-card {
-  background: white;
-  border-radius: 12px;
-  padding: 2rem;
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+  background: rgba(255, 255, 255, 0.05);
+  border: 1px solid rgba(255, 255, 255, 0.06);
+  border-radius: 16px;
+  padding: 1.5rem;
+  box-shadow: 0 12px 35px rgba(0, 0, 0, 0.3);
+  backdrop-filter: blur(10px);
 }
 
-.plant-header {
+.plant-card-top {
   display: flex;
   justify-content: space-between;
-  align-items: center;
-  margin-bottom: 1rem;
+  gap: 1rem;
+  align-items: flex-start;
+  flex-wrap: wrap;
 }
 
-.plant-header h2 {
+.plant-title-row {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+}
+
+.plant-title-row h2 {
   margin: 0;
-  font-size: 1.5rem;
-  color: #333;
 }
 
 .plant-status {
-  padding: 0.4rem 0.8rem;
-  border-radius: 20px;
-  color: white;
+  border: 1px solid rgba(255, 255, 255, 0.15);
+  background: rgba(255, 255, 255, 0.04);
+  padding: 0.35rem 0.75rem;
+  border-radius: 999px;
+  font-weight: 700;
   font-size: 0.85rem;
+}
+
+.plant-location {
+  margin: 0.35rem 0 0;
+  color: rgba(232, 237, 247, 0.7);
+}
+
+.action-buttons {
+  display: flex;
+  gap: 0.6rem;
+}
+
+.btn {
+  padding: 0.65rem 1.1rem;
+  border-radius: 10px;
+  font-weight: 700;
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  background: rgba(255, 255, 255, 0.05);
+  color: #e8edf7;
+  transition: all 0.2s ease;
+}
+
+.btn-primary {
+  background: linear-gradient(135deg, #1ad1a5, #4db4ff);
+  color: #0b1021;
+  border-color: transparent;
+}
+
+.btn-secondary {
+  background: rgba(255, 255, 255, 0.05);
+  border-color: rgba(255, 255, 255, 0.12);
+}
+
+.btn-secondary:hover,
+.btn-primary:hover {
+  transform: translateY(-1px);
+  box-shadow: 0 10px 20px rgba(0, 0, 0, 0.25);
+}
+
+.plant-meta {
+  display: flex;
+  gap: 0.75rem;
+  flex-wrap: wrap;
+  margin: 1.25rem 0 1rem;
+}
+
+.meta-chip {
+  background: rgba(255, 255, 255, 0.06);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  border-radius: 10px;
+  padding: 0.65rem 0.85rem;
+  min-width: 140px;
+}
+
+.meta-chip.soft {
+  background: rgba(255, 255, 255, 0.03);
+}
+
+.meta-chip span {
+  display: block;
+  color: rgba(232, 237, 247, 0.7);
+  font-size: 0.9rem;
+}
+
+.meta-chip strong {
+  display: block;
+  margin-top: 0.25rem;
+}
+
+.utilization {
+  background: rgba(255, 255, 255, 0.04);
+  border: 1px solid rgba(255, 255, 255, 0.07);
+  border-radius: 12px;
+  padding: 0.9rem 1rem;
+  margin-bottom: 1rem;
+}
+
+.util-header {
+  display: flex;
+  justify-content: space-between;
+  color: rgba(232, 237, 247, 0.85);
   font-weight: 600;
 }
 
-.plant-address {
-  color: #666;
-  margin: 0 0 1rem 0;
-}
-
-.plant-info {
-  display: flex;
-  gap: 2rem;
-  margin-bottom: 1.5rem;
-  padding: 1rem;
-  background: #f9fafb;
+.util-bar {
+  margin-top: 0.5rem;
+  height: 8px;
+  background: rgba(255, 255, 255, 0.08);
   border-radius: 8px;
+  overflow: hidden;
 }
 
-.info-item {
-  display: flex;
-  flex-direction: column;
-  gap: 0.25rem;
-}
-
-.info-item .label {
-  font-size: 0.85rem;
-  color: #999;
-  font-weight: 500;
-}
-
-.info-item .value {
-  font-size: 1.1rem;
-  color: #333;
-  font-weight: 600;
+.util-fill {
+  height: 100%;
+  background: linear-gradient(135deg, #1ad1a5, #4db4ff);
 }
 
 .metrics-grid {
   display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+  gap: 1rem;
+  margin-bottom: 1.1rem;
+}
+
+.energy-band {
+  display: grid;
   grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
-  gap: 1rem;
-  margin-bottom: 1.5rem;
+  gap: 0.75rem;
+  padding: 0.9rem;
+  border-radius: 12px;
+  background: rgba(255, 255, 255, 0.03);
+  border: 1px solid rgba(255, 255, 255, 0.05);
 }
 
-.plant-actions {
-  display: flex;
-  gap: 1rem;
-  margin-bottom: 1rem;
+.energy-band span {
+  color: rgba(232, 237, 247, 0.7);
+  font-size: 0.9rem;
 }
 
-.btn {
-  padding: 0.75rem 1.5rem;
-  border-radius: 6px;
-  text-decoration: none;
-  font-weight: 600;
-  transition: all 0.2s;
-  text-align: center;
-  flex: 1;
-}
-
-.btn-primary {
-  background: #667eea;
-  color: white;
-}
-
-.btn-primary:hover {
-  background: #5568d3;
-  transform: translateY(-1px);
-}
-
-.btn-secondary {
-  background: #f3f4f6;
-  color: #374151;
-}
-
-.btn-secondary:hover {
-  background: #e5e7eb;
-  transform: translateY(-1px);
-}
-
-.last-update {
-  color: #999;
-  font-size: 0.85rem;
-  text-align: center;
-  margin: 0;
+.energy-band strong {
+  display: block;
+  margin-top: 0.2rem;
+  color: #fff;
 }
 
 .error {
-  background: #fee2e2;
-  color: #991b1b;
+  background: rgba(248, 113, 113, 0.15);
+  color: #fecdd3;
   padding: 1.5rem;
-  border-radius: 8px;
-  text-align: center;
+  border-radius: 10px;
+  border: 1px solid rgba(248, 113, 113, 0.35);
 }
 
 .no-plants {
   text-align: center;
   padding: 3rem;
-}
-
-.no-plants h2 {
-  color: #333;
-  margin-bottom: 1rem;
+  background: rgba(255, 255, 255, 0.05);
+  border-radius: 14px;
 }
 
 .no-plants p {
-  color: #666;
-  max-width: 600px;
-  margin: 0 auto;
+  color: rgba(232, 237, 247, 0.7);
 }

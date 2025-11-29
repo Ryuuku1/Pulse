@@ -1,5 +1,5 @@
 import { useParams } from 'react-router-dom';
-import { useState } from 'react';
+import { useState, useMemo } from 'react';
 import { usePlantSummary, useTimeseries } from '../api/hooks';
 import { LoadingSpinner } from '../components/LoadingSpinner';
 import { MetricType } from '../types/api';
@@ -30,10 +30,7 @@ export function HistoricalView() {
       case 'today':
         return { from: startOfDay(now), to: endOfDay(now) };
       case 'yesterday':
-        return {
-          from: startOfDay(subDays(now, 1)),
-          to: endOfDay(subDays(now, 1)),
-        };
+        return { from: startOfDay(subDays(now, 1)), to: endOfDay(subDays(now, 1)) };
       case 'last7days':
         return { from: startOfDay(subDays(now, 7)), to: endOfDay(now) };
       case 'last30days':
@@ -49,21 +46,46 @@ export function HistoricalView() {
     value: point.value,
   }));
 
+  const stats = useMemo(() => {
+    if (!timeseries || timeseries.length === 0) return null;
+    const values = timeseries.map((p) => p.value);
+    const min = Math.min(...values);
+    const max = Math.max(...values);
+    const avg = values.reduce((a, b) => a + b, 0) / values.length;
+    const last = values[values.length - 1];
+    return { min, max, avg, last };
+  }, [timeseries]);
+
+  const metricLabel =
+    metricType === MetricType.Power
+      ? 'Power (kW)'
+      : metricType === MetricType.Energy
+        ? 'Energy (kWh)'
+        : metricType === MetricType.Voltage
+          ? 'Voltage (V)'
+          : 'Temperature (C)';
+
   return (
     <div className="historical-view">
       <div className="view-header">
-        <h1>Historical Data</h1>
-        {summary && <h2>{summary.plant.name}</h2>}
+        <div>
+          <p className="eyebrow">Trends</p>
+          <h1>Historical Data</h1>
+          {summary && <p className="plant-name">{summary.plant.name}</p>}
+        </div>
+        <div className="range-chip">
+          <span>Range</span>
+          <strong>
+            {format(from, 'MMM dd')} - {format(to, 'MMM dd')}
+          </strong>
+        </div>
       </div>
 
       <div className="controls">
         <div className="control-group">
-          <label>Time Range:</label>
+          <label>Time Range</label>
           <div className="button-group">
-            <button
-              className={timeRange === 'today' ? 'active' : ''}
-              onClick={() => setTimeRange('today')}
-            >
+            <button className={timeRange === 'today' ? 'active' : ''} onClick={() => setTimeRange('today')}>
               Today
             </button>
             <button
@@ -88,20 +110,42 @@ export function HistoricalView() {
         </div>
 
         <div className="control-group">
-          <label>Metric:</label>
-          <select
-            value={metricType}
-            onChange={(e) => setMetricType(Number(e.target.value) as MetricType)}
-          >
+          <label>Metric</label>
+          <select value={metricType} onChange={(e) => setMetricType(Number(e.target.value) as MetricType)}>
             <option value={MetricType.Power}>Power (kW)</option>
             <option value={MetricType.Energy}>Energy (kWh)</option>
             <option value={MetricType.Voltage}>Voltage (V)</option>
-            <option value={MetricType.Temperature}>Temperature (°C)</option>
+            <option value={MetricType.Temperature}>Temperature (C)</option>
           </select>
         </div>
       </div>
 
       {isLoading && <LoadingSpinner message="Loading historical data..." />}
+
+      {stats && (
+        <div className="kpi-grid">
+          <div className="kpi-card">
+            <span>Last</span>
+            <strong>{stats.last.toFixed(2)}</strong>
+            <small>{metricLabel}</small>
+          </div>
+          <div className="kpi-card">
+            <span>Average</span>
+            <strong>{stats.avg.toFixed(2)}</strong>
+            <small>{metricLabel}</small>
+          </div>
+          <div className="kpi-card">
+            <span>Peak</span>
+            <strong>{stats.max.toFixed(2)}</strong>
+            <small>{metricLabel}</small>
+          </div>
+          <div className="kpi-card">
+            <span>Lowest</span>
+            <strong>{stats.min.toFixed(2)}</strong>
+            <small>{metricLabel}</small>
+          </div>
+        </div>
+      )}
 
       {error && <div className="error">Error loading data: {error.message}</div>}
 
@@ -109,41 +153,29 @@ export function HistoricalView() {
         <div className="no-data">
           <p>No historical data available for the selected time range.</p>
           <p className="hint">
-            Note: Historical data collection is currently being implemented. The system stores
-            real-time data points as they arrive from the polling service.
+            Historical collection stores arriving real-time points. Let the poller run a bit longer to
+            build up a timeline.
           </p>
         </div>
       )}
 
       {chartData && chartData.length > 0 && (
         <div className="chart-container">
-          <h3>
-            {metricType === MetricType.Power && 'Power Output Over Time'}
-            {metricType === MetricType.Energy && 'Energy Production Over Time'}
-            {metricType === MetricType.Voltage && 'Voltage Over Time'}
-            {metricType === MetricType.Temperature && 'Temperature Over Time'}
-          </h3>
+          <h3>{metricLabel} over time</h3>
           <ResponsiveContainer width="100%" height={400}>
             <LineChart data={chartData}>
-              <CartesianGrid strokeDasharray="3 3" />
-              <XAxis dataKey="time" angle={-45} textAnchor="end" height={100} />
-              <YAxis />
+              <CartesianGrid strokeDasharray="3 3" stroke="rgba(255,255,255,0.08)" />
+              <XAxis dataKey="time" stroke="rgba(232,237,247,0.75)" interval="preserveStartEnd" />
+              <YAxis stroke="rgba(232,237,247,0.75)" />
               <Tooltip />
               <Legend />
               <Line
                 type="monotone"
                 dataKey="value"
-                stroke="#667eea"
+                stroke="#4db4ff"
                 strokeWidth={2}
-                name={
-                  metricType === MetricType.Power
-                    ? 'Power (kW)'
-                    : metricType === MetricType.Energy
-                      ? 'Energy (kWh)'
-                      : metricType === MetricType.Voltage
-                        ? 'Voltage (V)'
-                        : 'Temperature (°C)'
-                }
+                dot={false}
+                name={metricLabel}
               />
             </LineChart>
           </ResponsiveContainer>

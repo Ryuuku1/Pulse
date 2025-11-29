@@ -1,7 +1,6 @@
-version: '3.8'
-
 services:
   backend:
+    image: pulse-backend
     build:
       context: ./backend
       dockerfile: src/SolarMonitor.Api/Dockerfile
@@ -10,12 +9,24 @@ services:
       - "5000:8080"
     environment:
       - ASPNETCORE_ENVIRONMENT=Production
+      - DataAcquisition__Mode=${DATA_ACQUISITION_MODE:-HuaweiApi}
+      - DataAcquisition__PollingIntervalSeconds=${DATA_ACQUISITION_POLLING_INTERVAL:-0}
       - Huawei__BaseUrl=${HUAWEI_BASE_URL}
       - Huawei__Username=${HUAWEI_USERNAME}
       - Huawei__Password=${HUAWEI_PASSWORD}
       - Huawei__StationCode=${HUAWEI_STATION_CODE}
       - Huawei__PollingIntervalSeconds=${HUAWEI_POLLING_INTERVAL:-30}
       - Huawei__RequestTimeoutSeconds=${HUAWEI_REQUEST_TIMEOUT:-30}
+      - Modbus__Host=${MODBUS_HOST}
+      - Modbus__Port=${MODBUS_PORT:-502}
+      - Modbus__UnitId=${MODBUS_UNIT_ID:-1}
+      - Modbus__PollingIntervalSeconds=${MODBUS_POLLING_INTERVAL:-1}
+      - Modbus__ConnectTimeoutSeconds=${MODBUS_CONNECT_TIMEOUT:-3}
+      - Modbus__RequestTimeoutSeconds=${MODBUS_REQUEST_TIMEOUT:-5}
+      - Modbus__Plant__PlantId=${MODBUS_PLANT_ID:-modbus-plant}
+      - Modbus__Plant__PlantName=${MODBUS_PLANT_NAME:-Local Modbus Plant}
+      - Modbus__Plant__DeviceId=${MODBUS_DEVICE_ID:-inverter-1}
+      - Modbus__Plant__DeviceName=${MODBUS_DEVICE_NAME:-SUN2000 Inverter}
     healthcheck:
       test: ["CMD", "curl", "-f", "http://localhost:8080/health"]
       interval: 30s
@@ -27,6 +38,7 @@ services:
       - solarmonitor
 
   frontend:
+    image: pulse-frontend
     build:
       context: ./frontend
       dockerfile: Dockerfile

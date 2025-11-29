@@ -280,6 +280,32 @@ export Huawei__Password="your-password"
 
 Or in Docker via `.env` file (see `.env.example`).
 
+### Modbus TCP (local inverter polling)
+
+To bypass the Huawei cloud API and poll a SUN2000 inverter locally over Modbus TCP:
+
+```json
+{
+  "DataAcquisition": { "Mode": "ModbusTcp", "PollingIntervalSeconds": 0 },
+  "Modbus": {
+    "Host": "192.168.200.1",
+    "Port": 502,
+    "UnitId": 1,
+    "PollingIntervalSeconds": 1,
+    "RegisterMap": {
+      "ActivePower": { "Address": 32064, "Type": "Int32", "Scale": 1000 },
+      "GridPower": { "Address": 37113, "Type": "Int32", "Scale": 1000 },
+      "DayEnergy": { "Address": 32080, "Type": "UInt32", "Scale": 100 },
+      "TotalEnergy": { "Address": 32086, "Type": "UInt64", "Scale": 100 }
+    }
+  }
+}
+```
+
+- Defaults follow the public SUN2000 V5 Modbus TCP map (holding registers). Adjust addresses/scale factors if your firmware differs.
+- Polling defaults to **1 second** in Modbus mode; override with `DataAcquisition:PollingIntervalSeconds` or `Modbus:PollingIntervalSeconds`.
+- Static plant/device metadata for the API/UI lives under `Modbus:Plant` (IDs, names, capacity, device model).
+
 ### Frontend Configuration
 
 Create `frontend/.env.local`:
